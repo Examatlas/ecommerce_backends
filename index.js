@@ -34,8 +34,8 @@ app.use("/api/payment",PaymentRoute);
 app.get("/", (req, res) => {
   res
     .status(200)
-    .send({ message: "Welcome to ExamAtlas backend portal.",
-  updated_at: "17-10-2024 05:30 PM IST" });
+    .send({ message: "Welcome to Ecommerce backend portal.",
+  updated_at: "25-10-2024 17:34 PM IST" });
     });
 
 

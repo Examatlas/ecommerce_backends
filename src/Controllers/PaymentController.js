@@ -72,7 +72,7 @@ exports.paymentVerification = async (req, res) => {
        console.log("Payment saved successfully:", updateOrder);
       // Redirecting to success page
       res.redirect(
-        `http://localhost:5174/paymentsuccess?reference=${updateOrder._id}&userId=${updateOrder.userId}`
+        `http://localhost:5173/paymentsuccess?reference=${updateOrder._id}&userId=${updateOrder.userId}`
       );
 
     } catch (error) {
