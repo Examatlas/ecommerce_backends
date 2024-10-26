@@ -11,6 +11,9 @@ const WishlistRoute = require("./src/Routes/Wishlist")
 const CartRoute = require("./src/Routes/Cart");
 const BillingRoute = require("./src/Routes/BillingDetail");
 const PaymentRoute = require("./src/Routes/PaymentRoute");
+const BlogRoute = require("./src/Routes/Blog");
+const SubjectRoute = require("./src/Routes/SubjectRoute");
+const CategoryRoute = require("./src/Routes/Category")
 // const allRouter = require("./src/Routes/index")
 const Razorpay = require("razorpay");
 
@@ -29,6 +32,9 @@ app.use("/api/wishlist",WishlistRoute);
 app.use("/api/Cart",CartRoute);
 app.use("/api/billing",BillingRoute);
 app.use("/api/payment",PaymentRoute);
+app.use("/api/blog",BlogRoute);
+app.use("/api/subject",SubjectRoute);
+app.use("/api/category",CategoryRoute)
 
 // app.use("/api/", allRouter);
 app.get("/", (req, res) => {
