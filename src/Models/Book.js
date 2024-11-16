@@ -8,7 +8,22 @@ const bookSchema = new mongoose.Schema({
   author: { type: String, required: true },
   category: { type: String, required: true },
   content: { type: String, required: true },
-  tags: { type: [String], required: true }, // Array of strings for tags
+  subject: { type: String, required: true },
+  examName: { type: String, required: true },
+  height: { type: String, required: true },
+  width: { type: String, required: true },
+  weight: { type: String, required: true },
+  isbn: { type: String, required: true },
+  tags: { type: [String], required: true }, 
+  images: [
+    {
+      url: { type: String, required: true, trim: true },  // URL or path to the image
+      filename: { type: String, required: true, trim: true },  // Image filename
+      contentType: { type: String,trim: true },  // Optional: Content type (e.g., 'image/jpeg')
+      size: { type: Number },  // Optional: File size in bytes
+      uploadDate: { type: Date, default: Date.now }  // Optional: Upload timestamp
+    }
+  ],
 }, { timestamps: true });
 
 module.exports = mongoose.model('Book', bookSchema);

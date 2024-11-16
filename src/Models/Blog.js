@@ -18,8 +18,18 @@ const blogSchema = new mongoose.Schema(
       required: true,
       default: true
     },
+    images: [
+      {
+        url: { type: String, required: true, trim: true },  // URL or path to the image
+        filename: { type: String, required: true, trim: true },  // Image filename
+        contentType: { type: String,trim: true },  // Optional: Content type (e.g., 'image/jpeg')
+        size: { type: Number },  // Optional: File size in bytes
+        uploadDate: { type: Date, default: Date.now }  // Optional: Upload timestamp
+      }
+    ],
     tags: [String],
   },
+  
   { timestamps: true }
 );
 

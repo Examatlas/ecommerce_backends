@@ -13,6 +13,4 @@ router.post("/paymentverification", paymentVerification);
 router.get("/getOrdersByUserId/:userId", getOrdersByUserId);
 router.get("/getOneOrderByUserId/:userId", getOneOrderByUserId);
 
-
-
 module.exports = router;

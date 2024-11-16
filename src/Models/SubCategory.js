@@ -22,7 +22,7 @@ const SubCategorySchema = new mongoose.Schema({
     addedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        // required: true
       },
       deletedBy: {
         type: mongoose.Schema.Types.ObjectId,

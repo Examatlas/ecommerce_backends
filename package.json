@@ -11,11 +11,12 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@google-cloud/storage": "^7.14.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
-    "debug": "^4.3.7",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.7.2",
     "morgan": "^1.10.0",

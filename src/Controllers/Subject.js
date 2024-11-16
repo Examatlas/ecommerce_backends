@@ -16,7 +16,7 @@ exports.addSubject = async(req,res)=>{
             if(check_duplicate.is_active === true){
                 return res.status(400).json({ status: false, message: "Subject already Exists!" });
             }else{
-                 newSubject = await Subject.findByIdAndUpdate(check_duplicate._id, {title: title, is_active: true, addedBy: req.user.userId,deletedBy: null, deletedAt: null});
+                 newSubject = await Subject.findByIdAndUpdate(check_duplicate._id, {title: title, is_active: true, addedBy: null ,deletedBy: null, deletedAt: null});
                 return res
                 .status(200)
                 .json({ status: true, message: `New Subject ${id ? 'updated' : 'added'} successfully`, data: newSubject });
@@ -25,14 +25,15 @@ exports.addSubject = async(req,res)=>{
          newSubject = new Subject({
           title,
           is_active: true,
-          addedBy: req.user.userId
+          // addedBy: req.user?.userId
+          addedBy: null
         });
         await newSubject.save();
        }else{
         const check_duplicate = await Subject.findOne({title: title, _id: { $ne: id }});
         // console.log("check duplicate: ", check_duplicate)
         if(check_duplicate) return res.status(400).json({ status: false, message: "Subject already Exists!" });
-         newSubject = await Subject.findByIdAndUpdate(id, {title: title, is_active: true, addedBy: req.user.userId,deletedBy: null, deletedAt: null}, {new: true});
+         newSubject = await Subject.findByIdAndUpdate(id, {title: title, is_active: true, deletedBy: null, deletedAt: null}, {new: true});
        }
         return res
           .status(200)
@@ -68,7 +69,7 @@ exports.deleteSubject = async (req, res) => {
       }
 
     // Success response with subject data
-    const updateSubject = await Subject.findByIdAndUpdate(id, {is_active: false, deletedBy: req.user.userId, deletedAt: Date()});
+    const updateSubject = await Subject.findByIdAndUpdate(id, {is_active: false,deletedAt: Date()});
     return res.status(200).json({ status: true, message: "Subject deleted successfully" });
 
   } catch (error) {
@@ -76,6 +77,8 @@ exports.deleteSubject = async (req, res) => {
     return res.status(500).json({ status: false, message: "Something went wrong. We are looking into it." });
   }
 };
+
+
 
 exports.getSubject = async(req, res)=>{
     try {

@@ -2,36 +2,38 @@ const razorpayInstance = require("../../razorpayInstance"); // Adjust the path a
 const crypto = require("crypto");
 const Order = require("../Models/Order")
 const BillingDetail = require("../Models/BillingDetail");
+const Cart = require("../Models/Cart")
+const { createShiprocketOrder } = require("../shiprocket/shipRocketService");
+
 
 exports.checkout = async (req, res) => {
   try {
-    const {cartItems , userId , billingDetailId , amount, razorpay_payment_id, razorpay_signature  } = req.body;
+    const { cartItems, userId, billingDetailId, amount, razorpay_payment_id, razorpay_signature } = req.body;
     const options = {
       amount: Number(req.body.amount * 100), // amount in smallest unit
       // amount: 5000, // amount in smallest unit
       currency: "INR",
     };
-    const order = await razorpayInstance.orders.create(options); // Use the correct instance here
-    console.log(order , "myu ordere")
-    
-      const create_order = await Order.create({
-        userId : userId,
-        billingDetailId : billingDetailId,
-        totalAmount : amount,
-        razorpay_order_id : order.id,
-        items : cartItems,
-        razorpay_payment_id,
-        razorpay_signature 
-      });
-    
+    const order = await razorpayInstance.orders.create(options);
+
+    const create_order = await Order.create({
+      userId: userId,
+      billingDetailId: billingDetailId,
+      totalAmount: amount,
+      razorpay_order_id: order.id,
+      items: cartItems,
+      razorpay_payment_id,
+      razorpay_signature
+    });
+
     order.orderDetails = create_order
     res.status(200).json({
       success: true,
       order,
     });
-    console.log(order,"order is this ")
+    console.log(order, "order is this ")
   }
-   catch (error) {
+  catch (error) {
     console.error("Error during checkout:", error);
     res.status(500).json({
       success: false,
@@ -57,19 +59,20 @@ exports.paymentVerification = async (req, res) => {
 
   if (isAuthentic) {
     try {
-      
-       const updateOrder = await Order.findOneAndUpdate(
+
+      const updateOrder = await Order.findOneAndUpdate(
         {
-          razorpay_order_id : razorpay_order_id
+          razorpay_order_id: razorpay_order_id
         },
         {
-          status : "Paid",razorpay_payment_id,razorpay_signature
+          status: "Paid", razorpay_payment_id, razorpay_signature
         },
         {
-          new : true
+          new: true
         }
-       )
-       console.log("Payment saved successfully:", updateOrder);
+      )
+      console.log("Payment saved successfully:", updateOrder);
+
       // Redirecting to success page
       res.redirect(
         `http://localhost:5173/paymentsuccess?reference=${updateOrder._id}&userId=${updateOrder.userId}`
@@ -79,12 +82,12 @@ exports.paymentVerification = async (req, res) => {
       console.error("Error saving payment:", error);
       const updateOrder = await Order.findOneAndUpdate(
         {
-          razorpay_order_id : razorpay_order_id
+          razorpay_order_id: razorpay_order_id
         },
         {
-          status : "Failed"
+          status: "Failed"
         },
-       )
+      )
       res.status(500).json({
         success: false,
         message: "Payment verification failed",
@@ -94,12 +97,12 @@ exports.paymentVerification = async (req, res) => {
   } else {
     const updateOrder = await Order.findOneAndUpdate(
       {
-        razorpay_order_id : razorpay_order_id
+        razorpay_order_id: razorpay_order_id
       },
       {
-        status : "Failed"
+        status: "Failed"
       },
-     )
+    )
     console.log("Invalid signature:", { expectedSignature, razorpay_signature });
     res.status(400).json({
       success: false,
@@ -116,7 +119,7 @@ exports.getAllOrders = async (req, res) => {
     const orders = await Order.find().sort({ _id: -1 });
 
     // Filter out orders with valid items (i.e., with non-null bookId)
-    const filteredOrders = orders.filter(order => 
+    const filteredOrders = orders.filter(order =>
       order.items && order.items.some(item => item.bookId !== null)
     );
 
@@ -263,7 +266,7 @@ exports.getOrdersByUserId = async (req, res) => {
     console.log("Received userId:", userId);
 
     // Fetch orders by userId and sort them by creation in descending order
-    const orders = await Order.find({ userId , status: "Paid" }).sort({ _id: -1 });
+    const orders = await Order.find({ userId, status: "Paid" }).sort({ _id: -1 });
 
     console.log("Fetched orders:", orders);
 

@@ -22,7 +22,7 @@ exports.createCategory = async(req,res)=>{
             }else{
                 newCategory = await Category.findByIdAndUpdate(check_duplicate._id, {categoryName,
                     description,
-                    tags, is_active: true, addedBy: req.user.userId,deletedBy: null, deletedAt: null});
+                    tags, is_active: true, deletedBy: null, deletedAt: null});
                 return res
                 .status(200)
                 .json({ status: true, message: `New Category ${id ? 'updated' : 'added'} successfully`, data: newCategory });
@@ -32,8 +32,7 @@ exports.createCategory = async(req,res)=>{
           categoryName,
           description,
           tags,
-          is_active: true,
-          addedBy: req.user.userId
+          is_active: true
         });
         await newCategory.save();
        }else{
@@ -41,7 +40,7 @@ exports.createCategory = async(req,res)=>{
         // console.log("check duplicate: ", check_duplicate)
         if(check_duplicate) return res.status(400).json({ status: false, message: "Category already Exists!" });
         newCategory = await Category.findByIdAndUpdate(id, {categoryName,
-                 description, tags, is_active: true, addedBy: req.user.userId,deletedBy: null, deletedAt: null}, {new: true});
+                 description, tags, is_active: true, deletedBy: null, deletedAt: null}, {new: true});
        }
         return res
           .status(200)
@@ -115,7 +114,7 @@ exports.createSubCategory = async(req,res)=>{
             }else{
                 newSubCategory = await SubCategory.findByIdAndUpdate(check_duplicate._id, {categoryId,subCategoryName,
                     description,
-                    tags, is_active: true, addedBy: req.user.userId,deletedBy: null, deletedAt: null});
+                    tags, is_active: true,deletedBy: null, deletedAt: null});
                 return res
                 .status(200)
                 .json({ status: true, message: `New SubCategory ${id ? 'updated' : 'added'} successfully`, data: newSubCategory });
@@ -127,7 +126,7 @@ exports.createSubCategory = async(req,res)=>{
           description,
           tags,
           is_active: true,
-          addedBy: req.user.userId
+
         });
         await newSubCategory.save();
        }else{
@@ -135,7 +134,7 @@ exports.createSubCategory = async(req,res)=>{
         // console.log("check duplicate: ", check_duplicate)
         if(check_duplicate) return res.status(400).json({ status: false, message: "SubCategory already Exists!" });
         newSubCategory = await SubCategory.findByIdAndUpdate(id, {categoryId, subCategoryName,
-                 description, tags, is_active: true, addedBy: req.user.userId,deletedBy: null, deletedAt: null}, {new: true});
+                 description, tags, is_active: true, deletedBy: null, deletedAt: null}, {new: true});
        }
         return res
           .status(200)
@@ -201,7 +200,7 @@ exports.deleteCategory = async (req, res) => {
         }
   
       // Success response with category data
-      const updateCategory = await Category.findByIdAndUpdate(id, {is_active: false, deletedBy: req.user.userId, deletedAt: Date()});
+      const updateCategory = await Category.findByIdAndUpdate(id, {is_active: false,  deletedAt: Date()});
       return res.status(200).json({ status: true, message: "Category deleted successfully" });
   
     } catch (error) {
@@ -231,7 +230,7 @@ exports.deleteSubCategory = async (req, res) => {
         }
   
       // Success response with category data
-      const updateSubCategory = await SubCategory.findByIdAndUpdate(id, {is_active: false, deletedBy: req.user.userId, deletedAt: Date()});
+      const updateSubCategory = await SubCategory.findByIdAndUpdate(id, {is_active: false,  deletedAt: Date()});
       return res.status(200).json({ status: true, message: "SubCategory deleted successfully" });
   
     } catch (error) {

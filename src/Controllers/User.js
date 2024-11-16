@@ -86,6 +86,79 @@ exports.createUser = async (req, res) => {
 }
 
 
+// update user by id 
+exports.updateUser = async (req, res) => {
+    try {
+        const { userId } = req.params; // Get userId from URL parameter
+        const { name, email, mobile, password, role } = req.body;
+
+        if (!userId) {
+            return res.status(422).json({ status: false, message: "User ID is required!" });
+        }
+
+        const existingUser = await User.findById(userId);
+        if (!existingUser) {
+            return res.status(404).json({ status: false, message: "User not found!" });
+        }
+
+        // Validate the fields if they are present in the request
+        if (name && !validateName(name)) {
+            return res.status(422).json({ status: false, message: "Name is not valid!" });
+        }
+
+        if (email && !validateEmail(email)) {
+            return res.status(422).json({ status: false, message: "Email must contain character, digit, and special character!" });
+        }
+
+        if (mobile && !validatePhone(mobile)) {
+            return res.status(422).json({ status: false, message: "Mobile Number is not valid!" });
+        }
+
+        if (password && !validatePassword(password)) {
+            return res.status(422).json({ status: false, message: "Password must contain uppercase, lowercase, digit, and a special character." });
+        }
+
+        // Check if the email or mobile is being updated and if it's already taken
+        if (email && email !== existingUser.email) {
+            const existingEmail = await User.findOne({ email });
+            if (existingEmail) {
+                return res.status(400).json({ status: false, message: "Email already exists!" });
+            }
+        }
+
+        if (mobile && mobile !== existingUser.mobile) {
+            const existingMobile = await User.findOne({ mobile });
+            if (existingMobile) {
+                return res.status(400).json({ status: false, message: "Mobile Number already exists!" });
+            }
+        }
+
+        // If password is being updated, hash the new password
+        let updatedPassword = existingUser.password;
+        if (password) {
+            updatedPassword = await bcrypt.hash(password, 10);
+        }
+
+        // Update the user with new data
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            {
+                name: name || existingUser.name,
+                email: email || existingUser.email,
+                mobile: mobile || existingUser.mobile,
+                password: updatedPassword,
+                role: role || existingUser.role,
+            },
+            { new: true } // Return the updated user
+        );
+
+        return res.status(200).json({ status: true, message: "User updated successfully!", data: updatedUser });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ status: false, message: "Internal server error!" });
+    }
+};
+
 
 // user login api 
 exports.login = async (req, res) => {
