@@ -1,4 +1,4 @@
-const User = require("../Models/user");
+const User = require("../Models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { validateEmail, validatePhone, validateName, validatePassword } = require("../Utilis/validation");
