@@ -90,7 +90,7 @@ exports.getCart = async (req, res) => {
     if (!cart) {
       return res.status(404).json({ success: false, message: "Cart not found" });
     }
-    return res.status(200).json({ success: true, cart , message : "cart item fetched successfully !!" });
+    return res.status(200).json({ success: true, cart , message : "cart item fetched successfully !!"  , IsInCart : true });
   } catch (error) {
     return res.status(500).json({ success: false, message: "Failed to fetch cart", error: error.message });
   }
@@ -177,6 +177,7 @@ exports.updateCartItemQuantity = async (req, res) => {
     } else {
       // Update the quantity
       item.quantity = quantity;
+      item.IsInCart = true;
     }
 
     await cart.save();

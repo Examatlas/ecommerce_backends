@@ -24,7 +24,6 @@ exports.createBook = async (req, res) => {
     if (check_duplicate) {
       return res.status(400).json({ status: false, message: "Book already exists!" });
     }
-
     let imageFilenames = [];
 
     // Handle file uploads if files are present
@@ -71,10 +70,12 @@ exports.createBook = async (req, res) => {
       subject,
       isbn,
       images: imageFilenames,
+      
     });
+    console.log(newBook, "new Book is this ")
 
     await newBook.save();
-    return res.status(201).json({ status: true, message: "Book created successfully", data: newBook });
+    return res.status(201).json({ status: true, message: "Book created successfully", data: newBook  });
   } catch (error) {
     console.log("Error creating book:", error);
     return res.status(500).json({ status: false, message: "Server error", error });

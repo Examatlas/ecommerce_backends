@@ -33,7 +33,7 @@ exports.getWishlist = async (req, res) => {
     const { userId } = req.params;
 
     const wishlistItems = await Wishlist.find({ userId }).populate('bookId');
-    res.status(200).json({status:true, message: "wishlist retrived successfully!!" ,wishlistItems});
+    res.status(200).json({status:true, message: "wishlist retrived successfully!!" ,wishlistItems , IsInWishlist : true});
   } catch (error) {
     res.status(500).json({status:false, message: 'your wishlist is empty' });
   }

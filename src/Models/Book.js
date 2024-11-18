@@ -14,7 +14,8 @@ const bookSchema = new mongoose.Schema({
   width: { type: String, required: true },
   weight: { type: String, required: true },
   isbn: { type: String, required: true },
-  tags: { type: [String], required: true }, 
+  tags: { type: [String], required: true },
+ 
   images: [
     {
       url: { type: String, required: true, trim: true },  // URL or path to the image
