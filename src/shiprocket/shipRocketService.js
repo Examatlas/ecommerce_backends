@@ -16,22 +16,6 @@ async function getShiprocketToken() {
   }
 }
 
-// async function createShiprocketOrder(orderData) {
-//     const token = await getShiprocketToken();
-//     try {
-//       const response = await axios.post(
-//         `${SHIPROCKET_BASE_URL}/orders/create/adhoc`,
-//         orderData,
-//         {
-//           headers: { Authorization: `Bearer ${token}` },
-//         }
-//       );
-//       return response.data.order_id; // Shiprocket order ID
-//     } catch (error) {
-//       console.error('Error creating order on Shiprocket:', error);
-//       throw error;
-//     }
-//   }
 
 async function createShiprocketOrder(orderData) {
   const token = await getShiprocketToken();
@@ -48,7 +32,7 @@ async function createShiprocketOrder(orderData) {
 }
 
 
-  async function generateAWB(orderId, courierId) {
+async function generateAWB(orderId, courierId) {
     const token = await getShiprocketToken();
   
     try {
@@ -66,9 +50,8 @@ async function createShiprocketOrder(orderData) {
 
 
 
-  async function schedulePickup(orderId) {
+async function schedulePickup(orderId) {
     const token = await getShiprocketToken();
-  
     try {
       const response = await axios.post(
         `${SHIPROCKET_BASE_URL}/courier/generate/pickup`,

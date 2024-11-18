@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 // CartItem schema
 const cartItemSchema = new mongoose.Schema({
   bookId: { type: mongoose.Schema.Types.ObjectId, ref: 'Book', required: true },
-  quantity: { type: Number, required: true, default: 1 }
+  quantity: { type: Number, required: true, default: 1 },
+  IsInCart : {type : Boolean , requied : true , default : false }
 });
 
 // Cart schema

@@ -11,7 +11,6 @@ const getToken = async (req, res) => {
 };
 
 
-
 // Controller to create an order in Shiprocket
 const createOrder = async (req, res) => {
   const orderData = req.body; // Order data should be sent in the request body
@@ -24,7 +23,6 @@ const createOrder = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to create order', error: error.message });
   }
 };
-
 
 
 // Controller to generate an AWB for a Shiprocket order
