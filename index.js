@@ -52,7 +52,7 @@ app.get("/", (req, res) => {
   res
     .status(200)
     .send({ message: "Welcome to Ecommerce backend portal.",
-  updated_at: "25-10-2024 17:34 PM IST" });
+  updated_at: "11-11-2024 10:00 AM IST" });
     });
 
 mongoose
