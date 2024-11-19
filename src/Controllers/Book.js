@@ -18,6 +18,7 @@ exports.createBook = async (req, res) => {
     if (!category) return res.status(400).json({ status: false, message: "Category is required" });
     if (!keyword) return res.status(400).json({ status: false, message: "Keyword is required" });
     if (!subject) return res.status(400).json({ status: false, message: "Subject is required" });
+    if (!dimension) return res.status(400).json({ status: false, message: "Dimension is required" });
 
     // Check for duplicate book title
     const check_duplicate = await BookModel.findOne({ title, is_active: true });
@@ -52,7 +53,6 @@ exports.createBook = async (req, res) => {
         })
       );
     }
-
     // Now proceed with book creation using collected data
     const newBook = new BookModel({
       title,
@@ -63,8 +63,7 @@ exports.createBook = async (req, res) => {
       category,
       content,
       tags,
-     
-      dimension,
+      dimension: JSON.parse(dimension),
       weight,
       subject,
       isbn,
@@ -150,6 +149,7 @@ exports.updateBook = async (req, res) => {
     if (!category) return res.status(400).json({ status: false, message: "Category is required" });
     if (!keyword) return res.status(400).json({ status: false, message: "Keyword is required" });
     if (!subject) return res.status(400).json({ status: false, message: "subject is required" });
+    if (!dimension) return res.status(400).json({ status: false, message: "dimension is required" });
 
     let imageFilenames = book.images || [];
 
@@ -195,7 +195,7 @@ exports.updateBook = async (req, res) => {
     // book.tags = Array.isArray(tags) ? tags : book.tags;
     book.tags = tags
     // book.height = height || book.height;
-    book.dimension = dimension || book.dimension;
+    book.dimension = dimension ? JSON.parse(dimension) : book.dimension;
     book.weight = weight || book.weight;
     book.isbn = isbn || book.isbn;
     book.images = imageFilenames;
