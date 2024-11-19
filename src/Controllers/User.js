@@ -165,7 +165,7 @@ exports.login = async (req, res) => {
     try {
         const { mobile, password } = req?.body;
         console.log(mobile,password)
-        console.log(req.body)
+        // console.log(req.body)
 
         if (!mobile) {
             return res.status(422).json({ status: false, message: "Mobile Number is requried!" })
@@ -199,7 +199,7 @@ exports.login = async (req, res) => {
             })
         }
 
-        console.log("role", existingMobile.role)
+        // console.log("role", existingMobile.role)
         if (existingMobile.role !== 'user') {
             return res.status(403).json({ status: false, message: "Access denied. Only users can login." });
         }
