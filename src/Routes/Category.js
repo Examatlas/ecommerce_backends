@@ -1,5 +1,6 @@
 const express = require("express")
 const { createCategory, createSubCategory, getCategoryById, getSubCategoryById, getCategory,getSubCategory, deleteCategory,deleteSubCategory } = require("../Controllers/Category")
+
 const route = express.Router()
 
 route.post("/createCategory",createCategory)

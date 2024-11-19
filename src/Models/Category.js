@@ -14,6 +14,7 @@ const CategorySchema = new mongoose.Schema({
         type : [String],
         
     },
+    
     addedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
