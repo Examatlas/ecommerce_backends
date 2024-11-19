@@ -1,16 +1,16 @@
 const BookModel = require("../Models/Book")
 const mongoose = require("mongoose");
-const {uploadFile} = require("../Utilis/gcp_upload");
-const {deleteFile} = require("../Utilis/gcp_upload")
+const { uploadFile } = require("../Utilis/gcp_upload");
+const { deleteFile } = require("../Utilis/gcp_upload")
 const fs = require("fs")
 
 // create a Book
 exports.createBook = async (req, res) => {
   try {
-    const { title, keyword, price, sellPrice, author, category,subject, content, tags, examName, height, width, weight, isbn } = req?.body;
+    const { title, keyword, price, sellPrice, author, category, subject, content, tags,  dimension, weight, isbn } = req?.body;
 
     // Validate required fields
-    if (!title) return res.status(400).json({ status: false, message: "Title is required" });
+    if (!title) return res.status(400).json({ status: false, message: "Titles is required" });
     if (!content) return res.status(400).json({ status: false, message: "Content is required" });
     if (!price) return res.status(400).json({ status: false, message: "Price is required" });
     if (!sellPrice) return res.status(400).json({ status: false, message: "Sell price is required" });
@@ -63,19 +63,21 @@ exports.createBook = async (req, res) => {
       category,
       content,
       tags,
-      examName,
-      height,
-      width,
+     
+      dimension,
       weight,
       subject,
       isbn,
       images: imageFilenames,
-      
+      IsInCart: false
     });
     console.log(newBook, "new Book is this ")
 
     await newBook.save();
-    return res.status(201).json({ status: true, message: "Book created successfully", data: newBook  });
+    return res.status(201).json({
+      status: true, message: "Book created successfully",
+      data: newBook
+    });
   } catch (error) {
     console.log("Error creating book:", error);
     return res.status(500).json({ status: false, message: "Server error", error });
@@ -87,36 +89,36 @@ exports.createBook = async (req, res) => {
 exports.getBooks = async (req, res) => {
   try {
     const books = await BookModel.find();
-    if(!books){
-      return res.status(404).json({status:"false",message:"Book not found"});
+    if (!books) {
+      return res.status(404).json({ status: "false", message: "Book not found" });
     }
     return res
       .status(200)
-      .json({ status: true, message: "Books fetched succcessfully",books });
+      .json({ status: true, message: "Books fetched succcessfully", books, IsInCart: false });
   } catch (error) {
     console.log(error.message)
     return res
       .status(500)
-      .json({ status: false, error, message: "Internal server error",error });
+      .json({ status: false, error, message: "Internal server error", error });
   }
 };
 
 
 // // Get blog by ID
-exports.getBookById = async(req, res) => {
+exports.getBookById = async (req, res) => {
   try {
-    const id =req?.params?.id;
-    const book =await BookModel.findById(id);
+    const id = req?.params?.id;
+    const book = await BookModel.findById(id);
     if (!book) {
       return res.status(404).json({ message: "Book not found" });
     }
     return res
       .status(200)
-      .json({ status: true,  message: "Book fetched successfully" , book });
+      .json({ status: true, message: "Book fetched successfully", book, IsInCart: false });
   } catch (error) {
     return res
-    .status(500)
-    .json({ status: false, error, message: "Internal server error" });
+      .status(500)
+      .json({ status: false, error, message: "Internal server error" });
   }
 
 };
@@ -126,7 +128,7 @@ exports.getBookById = async(req, res) => {
 exports.updateBook = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, keyword, content, price, sellPrice, tags, author,subject, category, height, width, weight, isbn } = req.body;
+    const { title, keyword, content, price, sellPrice, tags, author, subject, category, dimension, weight, isbn } = req.body;
 
     // Check if the book exists
     const book = await BookModel.findById(id);
@@ -191,16 +193,16 @@ exports.updateBook = async (req, res) => {
     book.content = content || book.content;
     book.subject = subject || book.subject;
     // book.tags = Array.isArray(tags) ? tags : book.tags;
-    book.tags = tags 
-    book.height = height || book.height;
-    book.width = width || book.width;
+    book.tags = tags
+    // book.height = height || book.height;
+    book.dimension = dimension || book.dimension;
     book.weight = weight || book.weight;
     book.isbn = isbn || book.isbn;
     book.images = imageFilenames;
 
-    await book.save(); 
+    await book.save();
 
-    return res.status(200).json({ status: true, message: "Book updated successfully", book });
+    return res.status(200).json({ status: true, message: "Book updated successfully", book, IsInCart: false });
   } catch (error) {
     console.log("Error updating book:", error.message);
     return res.status(500).json({ status: false, message: "Internal server error", error });
@@ -209,17 +211,17 @@ exports.updateBook = async (req, res) => {
 
 
 // // Delete book by ID
-exports.deleteBook = async(req, res) => {
+exports.deleteBook = async (req, res) => {
   try {
-   const id=req?.params?.id;
-   const book =await BookModel.findByIdAndDelete(id);
+    const id = req?.params?.id;
+    const book = await BookModel.findByIdAndDelete(id);
 
-  if (!book) {
-    return res.status(404).json({ message: "Book not found" });
-  }
-  return res
-  .status(200)
-  .json({ status: true, message: "Book deleted succcessfully" });
+    if (!book) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+    return res
+      .status(200)
+      .json({ status: true, message: "Book deleted succcessfully", IsInCart: false });
   } catch (error) {
     return res
       .status(500)

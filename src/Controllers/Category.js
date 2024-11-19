@@ -46,22 +46,15 @@ exports.createCategory = async(req,res)=>{
           .status(200)
           .json({ status: true, message: `New Category ${id ? 'updated' : 'added'} successfully`, data: {_id: newCategory?._id, title: newCategory?.title, } });
 
-        // const NewCategory = await Category.create({
-        //     categoryName,
-        //     description,
-        //     tags,
-        //     addedBy: req?.user?.userId
-        // })
-        // return res.status(200).json({status:true,message:"Category created successfully",data:NewCategory})
-
     }catch(error){
         console.log(error.message)
         return res.status(500).json({status:false,mesage:"internal server error"})
     }
 }
 
-// get category by id 
 
+
+// get category by id 
 exports.getCategoryById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -284,6 +277,7 @@ exports.deleteSubCategory = async (req, res) => {
       }
   }
 
+  
   exports.getSubCategory = async(req, res)=>{
     try {
         const {search,categoryId, is_active=true, per_page=10 , page=1} = req?.query;

@@ -9,12 +9,13 @@ const bookSchema = new mongoose.Schema({
   category: { type: String, required: true },
   content: { type: String, required: true },
   subject: { type: String, required: true },
-  examName: { type: String, required: true },
-  height: { type: String, required: true },
-  width: { type: String, required: true },
+  // examName: { type: String, required: true },
+  dimension: { type: String, required: true },
+  // width: { type: String, required: true },
   weight: { type: String, required: true },
   isbn: { type: String, required: true },
   tags: { type: [String], required: true },
+  IsInCart : {type : Boolean , default : false},
  
   images: [
     {
