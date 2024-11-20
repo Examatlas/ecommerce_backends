@@ -121,7 +121,7 @@ exports.getCart = async (req, res) => {
 
 exports.removeFromCart = async (req, res) => {
   const { userId, itemId } = req.body;
-  console.log(req.body,"request body is this ")
+  console.log("request body remove cart is this: ",req.body)
   try {
     const cart = await Cart.findOne({ userId });
 
