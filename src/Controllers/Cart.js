@@ -149,6 +149,7 @@ exports.removeFromCart = async (req, res) => {
     await cart.save();
     return res.status(200).json({ success: true, message: "Item removed from cart, isInCart set to false", cart });
   } catch (error) {
+    console.log(error.message, "error is this");
     return res.status(500).json({ success: false, message: "Failed to remove item from cart", error: error.message });
   }
 };
