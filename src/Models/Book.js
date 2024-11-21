@@ -12,6 +12,8 @@ const bookSchema = new mongoose.Schema({
   // examName: { type: String, required: true },
   dimension: { type: JSON, required: true },
   // width: { type: String, required: true },
+  stock:{type:String , required : true},
+  page:{type:Number , required : true},
   weight: { type: String, required: true },
   isbn: { type: String, required: true },
   tags: { type: [String], required: true },

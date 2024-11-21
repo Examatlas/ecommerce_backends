@@ -1,60 +1,218 @@
 const Category = require("../Models/Category");
 const SubCategory = require("../Models/SubCategory");
+const Book = require("../Models/Book");
+const {uploadFile} = require("../Utilis/gcp_upload");
+const fs = require("fs")
 
-exports.createCategory = async(req,res)=>{
-    try{
-        const {id, categoryName , description , tags} = req.body;
-        if(!categoryName){
-            return res.status(422).json({status:false,message:"categoryName is required!"})
-        }
-        if(!description){
-            return res.status(422).json({status:false,message:"description is required!"})
-        }
-        if(!tags){
-            return res.status(422).json({status:false,message:"tags is required!"})
-        }
-        let newCategory;
-        if(!id){
-        const check_duplicate = await Category.findOne({categoryName: categoryName});
-        if(check_duplicate){
-            if(check_duplicate.is_active === true){
-                return res.status(400).json({ status: false, message: "Category already Exists!" });
-            }else{
-                newCategory = await Category.findByIdAndUpdate(check_duplicate._id, {categoryName,
-                    description,
-                    tags, is_active: true, deletedBy: null, deletedAt: null});
-                return res
-                .status(200)
-                .json({ status: true, message: `New Category ${id ? 'updated' : 'added'} successfully`, data: newCategory });
-            }
-        }
-        newCategory = new Category({
-          categoryName,
-          description,
-          tags,
-          is_active: true
-        });
-        await newCategory.save();
-       }else{
-        const check_duplicate = await Category.findOne({categoryName: categoryName, _id: { $ne: id }});
-        // console.log("check duplicate: ", check_duplicate)
-        if(check_duplicate) return res.status(400).json({ status: false, message: "Category already Exists!" });
-        newCategory = await Category.findByIdAndUpdate(id, {categoryName,
-                 description, tags, is_active: true, deletedBy: null, deletedAt: null}, {new: true});
-       }
-        return res
-          .status(200)
-          .json({ status: true, message: `New Category ${id ? 'updated' : 'added'} successfully`, data: {_id: newCategory?._id, title: newCategory?.title, } });
 
-    }catch(error){
-        console.log(error.message)
-        return res.status(500).json({status:false,mesage:"internal server error"})
-    }
-}
+exports.createCategory = async (req, res) => {
+  try {
+      const { id, categoryName, description, tags } = req.body;
+
+      // Check if required fields are present
+      if (!categoryName || !description || !tags) {
+          return res.status(422).json({ status: false, message: "All fields are required!" });
+      }
+
+      let imageFilenames = [];
+
+      // Handle file uploads if present
+      if (req.files && req.files.length) {
+          try {
+              imageFilenames = await Promise.all(
+                  req.files.map(async (file) => {
+                      // Upload image to cloud storage (e.g., AWS S3)
+                      const image_url = await uploadFile(file.path);
+
+                      // Delete the local file after uploading to cloud storage
+                      fs.unlink(file.path, (err) => {
+                          if (err) console.error("Error deleting local file:", err);
+                      });
+
+                      return {
+                          url: image_url,
+                          filename: file.filename,
+                          contentType: file.mimetype,
+                          size: file.size,
+                          uploadDate: Date.now(),
+                      };
+                  })
+              );
+          } catch (uploadError) {
+              console.error("Error uploading image:", uploadError);
+              return res.status(500).json({ status: false, message: "Error uploading images" });
+          }
+      }
+
+      let newCategory;
+
+      // If no ID is provided, create a new category
+      if (!id) {
+          // Check for duplicate category name
+          const check_duplicate = await Category.findOne({ categoryName });
+          if (check_duplicate && check_duplicate.is_active) {
+              return res.status(400).json({ status: false, message: "Category already exists!" });
+          }
+
+          // Create new category
+          newCategory = new Category({
+              categoryName,
+              description,
+              tags: tags.split(",").map((tag) => tag.trim()), // Convert tags to an array
+              images: imageFilenames,
+              is_active: true,
+          });
+
+          await newCategory.save();
+      } else {
+          // If ID is provided, update the existing category
+          newCategory = await Category.findByIdAndUpdate(
+              id,
+              { categoryName, description, tags: tags.split(",").map((tag) => tag.trim()), images: imageFilenames, is_active: true },
+              { new: true }
+          );
+      }
+
+      return res.status(200).json({
+          status: true,
+          message: `Category ${id ? "updated" : "added"} successfully!`,
+          data: newCategory,
+      });
+  } catch (error) {
+      console.error("Error while creating or updating category:", error);
+      return res.status(500).json({ status: false, message: "Internal server error" });
+  }
+};
+
+
+
+
+// exports.createCategory = async(req,res)=>{
+//   try{
+//       const {id, categoryName , description , tags} = req.body;
+//       if(!categoryName){
+//           return res.status(422).json({status:false,message:"categoryName is required!"})
+//       }
+//       if(!description){
+//           return res.status(422).json({status:false,message:"description is required!"})
+//       }
+//       if(!tags){
+//           return res.status(422).json({status:false,message:"tags is required!"})
+//       }
+//       let newCategory;
+//       if(!id){
+//       const check_duplicate = await Category.findOne({categoryName: categoryName});
+//       if(check_duplicate){
+//           if(check_duplicate.is_active === true){
+//               return res.status(400).json({ status: false, message: "Category already Exists!" });
+//           }else{
+//               newCategory = await Category.findByIdAndUpdate(check_duplicate._id, {categoryName,
+//                   description,
+//                   tags, is_active: true, deletedBy: null, deletedAt: null});
+//               return res
+//               .status(200)
+//               .json({ status: true, message: `New Category ${id ? 'updated' : 'added'} successfully`, data: newCategory });
+//           }
+//       }
+//       newCategory = new Category({
+//         categoryName,
+//         description,
+//         tags,
+//         is_active: true
+//       });
+//       await newCategory.save();
+//      }else{
+//       const check_duplicate = await Category.findOne({categoryName: categoryName, _id: { $ne: id }});
+//       // console.log("check duplicate: ", check_duplicate)
+//       if(check_duplicate) return res.status(400).json({ status: false, message: "Category already Exists!" });
+//       newCategory = await Category.findByIdAndUpdate(id, {categoryName,
+//                description, tags, is_active: true, deletedBy: null, deletedAt: null}, {new: true});
+//      }
+//       return res
+//         .status(200)
+//         .json({ status: true, message: `New Category ${id ? 'updated' : 'added'} successfully`, data: {_id: newCategory?._id, title: newCategory?.title, } });
+
+//   }catch(error){
+//       console.log(error.message)
+//       return res.status(500).json({status:false,mesage:"internal server error"})
+//   }
+// }
+
 
 
 
 // get category by id 
+
+
+
+exports.updateCategory = async (req, res) => {
+  try {
+      const { id, categoryName, description, tags } = req.body;
+
+      // Check if required fields are present
+      if (!categoryName || !description || !tags) {
+          return res.status(422).json({ status: false, message: "All fields are required!" });
+      }
+
+      // Find category by id
+      const existingCategory = await Category.findById(id);
+      if (!existingCategory) {
+          return res.status(404).json({ status: false, message: "Category not found!" });
+      }
+
+      let imageFilenames = [];
+
+      // Handle file uploads if present
+      if (req.files && req.files.length) {
+          try {
+              imageFilenames = await Promise.all(
+                  req.files.map(async (file) => {
+                      // Upload image to cloud storage (e.g., AWS S3)
+                      const image_url = await uploadFile(file.path);
+
+                      // Delete the local file after uploading to cloud storage
+                      fs.unlink(file.path, (err) => {
+                          if (err) console.error("Error deleting local file:", err);
+                      });
+
+                      return {
+                          url: image_url,
+                          filename: file.filename,
+                          contentType: file.mimetype,
+                          size: file.size,
+                          uploadDate: Date.now(),
+                      };
+                  })
+              );
+          } catch (uploadError) {
+              console.error("Error uploading image:", uploadError);
+              return res.status(500).json({ status: false, message: "Error uploading images" });
+          }
+      }
+
+      // Update category data
+      existingCategory.categoryName = categoryName;
+      existingCategory.description = description;
+      existingCategory.tags = tags.split(",").map((tag) => tag.trim()); // Convert tags to an array
+      existingCategory.images = imageFilenames.length ? imageFilenames : existingCategory.images; // Only update images if new ones are uploaded
+      existingCategory.is_active = true;
+
+      await existingCategory.save();
+
+      return res.status(200).json({
+          status: true,
+          message: "Category updated successfully!",
+          data: existingCategory,
+      });
+  } catch (error) {
+      console.error("Error while updating category:", error);
+      return res.status(500).json({ status: false, message: "Internal server error" });
+  }
+};
+
+
+
+
 exports.getCategoryById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -80,6 +238,8 @@ exports.getCategoryById = async (req, res) => {
     return res.status(500).json({ status: false, message: "Internal server error" });
   }
 };
+
+
 
 // create subCategory
 exports.createSubCategory = async(req,res)=>{
@@ -133,15 +293,6 @@ exports.createSubCategory = async(req,res)=>{
           .status(200)
           .json({ status: true, message: `New SubCategory ${id ? 'updated' : 'added'} successfully`, data: {_id: newSubCategory?._id, title: newSubCategory?.title, } });
 
-
-        // const newsubcategory = await SubCategory.create({
-        //     categoryId,
-        //     subCategoryName,
-        //     description,
-        //     tags,
-        //     addedBy: req?.user?.userId
-        // })
-        // return res.status(200).json({status:true,message:"Sub Category created successfully!",data:newsubcategory})
     }catch(error){
         console.log(error.message)
         return res.status(500).json({status:false,message:"internal server error!!"})
@@ -202,6 +353,8 @@ exports.deleteCategory = async (req, res) => {
     }
   };
 
+
+
 exports.deleteSubCategory = async (req, res) => {
     try {
       const { id } = req.params;
@@ -232,6 +385,8 @@ exports.deleteSubCategory = async (req, res) => {
     }
   };  
   
+
+
   exports.getCategory = async(req, res)=>{
       try {
           const {search, is_active=true, per_page=10 , page=1} = req?.query;
@@ -320,3 +475,25 @@ exports.deleteSubCategory = async (req, res) => {
         });
     }
 }
+
+
+
+exports.getBooksByCategoryName = async (req, res) => {
+  try {
+    const { category } = req.params; 
+
+    // Find books by examName, not _id
+    const books = await Book.find({ category });
+
+    // If no books are found, send a 404 response
+    if (books.length === 0) {
+      return res.status(404).json({ message: "No books found for this category." });
+    }
+    // Send the filtered books as a response
+    res.status(200).json({ books });
+  } catch (error) {
+      console.log(error.message,"error")
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+

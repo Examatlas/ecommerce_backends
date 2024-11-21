@@ -44,9 +44,88 @@ exports.checkout = async (req, res) => {
 };
 
 
-exports.paymentVerification = async (req, res) => {
+// exports.paymentVerification = async (req, res) => {
 
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, isApp=false } = req.body;
+//   const { razorpay_order_id, razorpay_payment_id, razorpay_signature, isApp=false } = req.body;
+
+//   console.log("Request Body:", req.body);
+
+//   const body = razorpay_order_id + "|" + razorpay_payment_id;
+//   const expectedSignature = crypto
+//     .createHmac("sha256", process.env.RAZORPAY_API_SECRET)
+//     .update(body.toString())
+//     .digest("hex");
+
+//   const isAuthentic = expectedSignature === razorpay_signature;
+//   console
+
+//   if (isAuthentic) {
+//     try {
+      
+//        const updateOrder = await Order.findOneAndUpdate(
+//         {
+//           razorpay_order_id : razorpay_order_id
+//         },
+//         {
+//           status : "Paid",razorpay_payment_id,razorpay_signature
+//         },
+//         {
+//           new : true
+//         }
+//        )
+//        console.log("Payment saved successfully:", updateOrder);
+//       // Redirecting to success page
+//       if(updateOrder){
+//         isApp ? 
+//         res.status(200).json({
+//           success: true,
+//           message: "Payment verification completed",
+//           data: updateOrder,
+//         })
+//         : 
+//       res.redirect(
+//         `${process.env.ECOMMERCE_FE_URL || 'http://localhost:5173'}/paymentsuccess?reference=${updateOrder._id}&userId=${updateOrder.userId}`
+//       );
+//     }else{
+
+//     }
+
+//     } catch (error) {
+//       console.error("Error saving payment:", error);
+//       const updateOrder = await Order.findOneAndUpdate(
+//         {
+//           razorpay_order_id : razorpay_order_id
+//         },
+//         {
+//           status : "Failed"
+//         },
+//        )
+//       res.status(500).json({
+//         success: false,
+//         message: "Payment verification failed",
+//         error: error.message,
+//       });
+//     }
+//   } else {
+//     const updateOrder = await Order.findOneAndUpdate(
+//       {
+//         razorpay_order_id : razorpay_order_id
+//       },
+//       {
+//         status : "Failed"
+//       },
+//      )
+//     console.log("Invalid signature:", { expectedSignature, razorpay_signature });
+//     res.status(400).json({
+//       success: false,
+//       message: "Invalid signature",
+//     });
+//   }
+// };
+
+
+exports.paymentVerification = async (req, res) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, isApp = false } = req.body;
 
   console.log("Request Body:", req.body);
 
@@ -57,49 +136,61 @@ exports.paymentVerification = async (req, res) => {
     .digest("hex");
 
   const isAuthentic = expectedSignature === razorpay_signature;
-  console
 
   if (isAuthentic) {
     try {
-      
-       const updateOrder = await Order.findOneAndUpdate(
-        {
-          razorpay_order_id : razorpay_order_id
-        },
-        {
-          status : "Paid",razorpay_payment_id,razorpay_signature
-        },
-        {
-          new : true
-        }
-       )
-       console.log("Payment saved successfully:", updateOrder);
-      // Redirecting to success page
-      if(updateOrder){
-        isApp ? 
-        res.status(200).json({
-          success: true,
-          message: "Payment verification completed",
-          data: updateOrder,
-        })
-        : 
-      res.redirect(
-        `${process.env.ECOMMERCE_FE_URL || 'http://localhost:5173'}/paymentsuccess?reference=${updateOrder._id}&userId=${updateOrder.userId}`
-      );
-    }else{
-
-    }
-
-    } catch (error) {
-      console.error("Error saving payment:", error);
+      // Update the order status to 'Paid'
       const updateOrder = await Order.findOneAndUpdate(
         {
-          razorpay_order_id : razorpay_order_id
+          razorpay_order_id: razorpay_order_id,
         },
         {
-          status : "Failed"
+          status: "Paid",
+          razorpay_payment_id,
+          razorpay_signature,
         },
-       )
+        {
+          new: true,
+        }
+      );
+
+      console.log("Payment saved successfully:", updateOrder);
+
+      // If the order is successfully updated, delete the cart
+      if (updateOrder) {
+        await Cart.deleteOne({ userId: updateOrder.userId });
+        console.log("Cart deleted successfully for user:", updateOrder.userId);
+
+        if (isApp) {
+          res.status(200).json({
+            success: true,
+            message: "Payment verification completed and cart deleted",
+            data: updateOrder,
+          });
+        } else {
+          res.redirect(
+            `${process.env.ECOMMERCE_FE_URL || "http://localhost:5173"}/paymentsuccess?reference=${updateOrder._id}&userId=${updateOrder.userId}`
+          );
+        }
+      } else {
+        res.status(500).json({
+          success: false,
+          message: "Order update failed",
+        });
+      }
+    } catch (error) {
+      console.error("Error processing payment:", error);
+
+      // Update order status to 'Failed' in case of an error
+      await Order.findOneAndUpdate(
+        {
+          razorpay_order_id: razorpay_order_id,
+        },
+        {
+          status: "Failed",
+        }
+      );
+
       res.status(500).json({
         success: false,
         message: "Payment verification failed",
@@ -107,21 +198,26 @@ exports.paymentVerification = async (req, res) => {
       });
     }
   } else {
-    const updateOrder = await Order.findOneAndUpdate(
+    // Invalid signature case
+    await Order.findOneAndUpdate(
       {
-        razorpay_order_id : razorpay_order_id
+        razorpay_order_id: razorpay_order_id,
       },
       {
-        status : "Failed"
-      },
-     )
+        status: "Failed",
+      }
+    );
+
     console.log("Invalid signature:", { expectedSignature, razorpay_signature });
+
     res.status(400).json({
       success: false,
       message: "Invalid signature",
     });
   }
 };
+
+
 
 
 // get all order api 

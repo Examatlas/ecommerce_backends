@@ -7,7 +7,7 @@ const fs = require("fs")
 // create a Book
 exports.createBook = async (req, res) => {
   try {
-    const { title, keyword, price, sellPrice, author, category, subject, content, tags,  dimension, weight, isbn } = req?.body;
+    const { title, keyword, price, sellPrice, author, category, subject, content, tags,  dimension, weight, isbn , stock , page} = req?.body;
 
     // Validate required fields
     if (!title) return res.status(400).json({ status: false, message: "Titles is required" });
@@ -19,6 +19,8 @@ exports.createBook = async (req, res) => {
     if (!keyword) return res.status(400).json({ status: false, message: "Keyword is required" });
     if (!subject) return res.status(400).json({ status: false, message: "Subject is required" });
     if (!dimension) return res.status(400).json({ status: false, message: "Dimension is required" });
+    if (!stock) return res.status(400).json({ status: false, message: "stock is required" });
+    if (!page) return res.status(400).json({ status: false, message: "page is required" });
 
     // Check for duplicate book title
     const check_duplicate = await BookModel.findOne({ title, is_active: true });
@@ -67,6 +69,8 @@ exports.createBook = async (req, res) => {
       weight,
       subject,
       isbn,
+      stock,
+      page,
       images: imageFilenames,
       IsInCart: false
     });
@@ -127,7 +131,7 @@ exports.getBookById = async (req, res) => {
 exports.updateBook = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, keyword, content, price, sellPrice, tags, author, subject, category, dimension, weight, isbn } = req.body;
+    const { title, keyword, content, price, sellPrice, tags, author, subject, category, dimension, weight, isbn , stock , page} = req.body;
 
     // Check if the book exists
     const book = await BookModel.findById(id);
@@ -150,6 +154,8 @@ exports.updateBook = async (req, res) => {
     if (!keyword) return res.status(400).json({ status: false, message: "Keyword is required" });
     if (!subject) return res.status(400).json({ status: false, message: "subject is required" });
     if (!dimension) return res.status(400).json({ status: false, message: "dimension is required" });
+    if (!stock) return res.status(400).json({ status: false, message: "stock is required" });
+    if (!page) return res.status(400).json({ status: false, message: "page is required" });
 
     let imageFilenames = book.images || [];
 
@@ -192,6 +198,8 @@ exports.updateBook = async (req, res) => {
     book.category = category || book.category;
     book.content = content || book.content;
     book.subject = subject || book.subject;
+    book.stock = stock || book.stock;
+    book.page = page || book.page;
     // book.tags = Array.isArray(tags) ? tags : book.tags;
     book.tags = tags
     // book.height = height || book.height;

@@ -17,6 +17,8 @@ const CategoryRoute = require("./src/Routes/Category");
 const ExamRoute = require("./src/Routes/Exam");
 const BannerRoute = require("./src/Routes/Banner");
 const ShiprocketRoute = require("./src/Routes/ShiprocketOrder");
+const BulkOrderRoute = require("./src/Routes/BulkOrder");
+const AuthorRoute = require("./src/Routes/Author")
 
 const Razorpay = require("razorpay");
 
@@ -46,6 +48,8 @@ app.use("/api/category",CategoryRoute)
 app.use("/api/exam",ExamRoute);
 app.use("/api/banner",BannerRoute);
 app.use("/api/shiprocket",ShiprocketRoute)
+app.use("/api/bulkorder",BulkOrderRoute);
+app.use("/api/author",AuthorRoute)
 
 
 app.get("/", (req, res) => {
