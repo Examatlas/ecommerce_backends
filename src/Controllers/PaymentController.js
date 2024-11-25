@@ -3,7 +3,7 @@ const crypto = require("crypto");
 const Order = require("../Models/Order")
 const BillingDetail = require("../Models/BillingDetail");
 const Cart = require("../Models/Cart")
-const { createShiprocketOrder } = require("../shiprocket/shipRocketService");
+
 
 
 exports.checkout = async (req, res) => {
@@ -42,6 +42,8 @@ exports.checkout = async (req, res) => {
     });
   }
 };
+
+
 
 
 // exports.paymentVerification = async (req, res) => {
@@ -122,6 +124,8 @@ exports.checkout = async (req, res) => {
 //     });
 //   }
 // };
+
+
 
 
 exports.paymentVerification = async (req, res) => {

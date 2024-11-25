@@ -73,7 +73,7 @@ exports.createUser = async (req, res) => {
 
         let payload = {
             email,
-            cc: ["crownclassesrnc@gmail.com"],
+            cc: ["amitaryacp@gmail.com"],
         };
         await mailPayload("create_account", payload);
 
@@ -327,13 +327,14 @@ exports.forgotPassword = async (req, res) => {
       user.tokenExpiresAt = tokenExpiresAt;
       await user.save();
 
-      const resetURL = `http://localhost:5174/examAtlas/reset-password-token?token=${resetToken}`;
+      const resetURL = `https://ecommerce.crownpublications.in/examAtlas/reset-password-token?token=${resetToken}`;
+    //   const resetURL = `http://localhost:5173/examAtlas/reset-password-token?token=${resetToken}`;
 
       // Send the reset link via email
       const payload = {
         email: user.email,
         resetURL,
-        cc: ["crownclassesrnc@gmail.com"], // Optional CC email
+        cc: ["amitaryacp@gmail.com"], // Optional CC email
       };
       await mailPayload("forgot_password_link", payload); // Send the email with the reset URL
 

@@ -20,7 +20,7 @@ const ShiprocketOrderSchema = new mongoose.Schema(
       default: false,
     },
     orderDetails: {
-      type: Object, // Store the order data as a JSON object
+      type: Object, 
       required: true,
     },
     status: {

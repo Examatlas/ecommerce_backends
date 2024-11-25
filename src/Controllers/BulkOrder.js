@@ -22,7 +22,7 @@ exports.createBulkOrder = async(req,res)=>{
 
         await mailPayload("Bulk_Order_Request", {
             email,
-            cc: ["crownclassesrnc@gmail.com"],
+            cc: ["amitaryacp@gmail.com"],
             storeName,
             personName,
             location,
@@ -39,3 +39,5 @@ exports.createBulkOrder = async(req,res)=>{
         return res.status(500).json({status:false,message:"internal server error"})
     }
 }
+
+

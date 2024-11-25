@@ -6,7 +6,7 @@ const emailHeader = `<div style="background-color: #3498db; padding: 20px; text-
 const emailFooter = `<div style="background-color: #f2f2f2; padding: 20px; text-align: center;">
                      <p style="margin: 0;">&copy; 2024 crown. All rights reserved.</p>
                      <p style="margin: 5px 0 0 0;">Address: East jail road , Ranchi </p>
-                     <p style="margin: 5px 0 0 0;">Owner EMail: crownclassesrnc@gmail.com</p>
+                     <p style="margin: 5px 0 0 0;">Owner EMail: amitaryacp@gmail.com</p>
                      </div>`;
 
 

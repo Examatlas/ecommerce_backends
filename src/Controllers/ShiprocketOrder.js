@@ -11,41 +11,60 @@ const getToken = async (req, res) => {
 };
 
 
-// Controller to create an order in Shiprocket
+
 const createOrder = async (req, res) => {
-  const orderData = req.body; // Order data should be sent in the request body
- 
+  const orderData = req.body; 
   try {
     const orderId = await shiprocketService.createShiprocketOrder(orderData);
-    console.log(orderId , "order id is this ")
+    console.log(orderId, "Order ID is this"); // Log the order ID
     res.status(201).json({ success: true, orderId });
   } catch (error) {
+    console.error("Error in createOrder handler:", error.message);
     res.status(500).json({ success: false, message: 'Failed to create order', error: error.message });
   }
 };
 
 
-// Controller to generate an AWB for a Shiprocket order
-const generateAWB = async (req, res) => {
-  const { orderId, courierId } = req.body; // Order ID and Courier ID should be sent in the request body
+const generateAWBS = async (req, res) => {
+  const { order_id, shipment_id } = req.body;
+
+  if (!order_id || !shipment_id) {
+    return res.status(400).json({ success: false, message: "orderId and shipmentId are required." });
+  }
+
   try {
-    const awbCode = await shiprocketService.generateAWB(orderId, courierId);
-    res.status(200).json({ success: true, awbCode });
+    const awbResponse = await shiprocketService.generateAWB(order_id, shipment_id);
+
+    if (awbResponse && awbResponse.awb_code) {
+      return res.status(200).json({ success: true, awbCode: awbResponse.awb_code });
+    } else {
+      throw new Error('AWB code not found in the response.');
+    }
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to generate AWB', error: error.message });
+    return res.status(500).json({ success: false, message: "Failed to generate AWB", error: error.message });
   }
 };
 
 
-// Controller to schedule a pickup for a Shiprocket order
 const schedulePickup = async (req, res) => {
-  const { orderId } = req.body; 
+  const { orderId } = req.body;
+
+  if (!orderId) {
+    return res.status(400).json({ success: false, message: "Order ID is required" });
+  }
+
   try {
     const response = await shiprocketService.schedulePickup(orderId);
-    res.status(200).json({ success: true, response });
+
+    if (response && response.success) {
+      res.status(200).json({ success: true, message: "Pickup scheduled successfully", response });
+    } else {
+      throw new Error(response.message || "Failed to schedule pickup");
+    }
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to schedule pickup', error: error.message });
+    console.error("Error scheduling pickup:", error.message);
+    res.status(500).json({ success: false, message: "Failed to schedule pickup", error: error.message });
   }
 };
 
-module.exports = { getToken, createOrder, generateAWB, schedulePickup };
+module.exports = { getToken, createOrder, generateAWBS, schedulePickup };

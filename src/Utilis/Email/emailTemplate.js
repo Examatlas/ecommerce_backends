@@ -1,12 +1,12 @@
 const emailHeader = `<div style="background-color: #3498db; padding: 20px; text-align: center; color: #ffffff;">
-                     <h1 style="margin: 0;">EXAMATLAS</h1>
+                     <h1 style="margin: 0;">CROWN PUBLICATIONS</h1>
                      <p style="margin: 10px 0 0 0;">Welcome to our newsletter!</p>
                      </div>`;
 
 const emailFooter = `<div style="background-color: #f2f2f2; padding: 20px; text-align: center;">
-                     <p style="margin: 0;">&copy; 2024 Your Company. All rights reserved.</p>
-                     <p style="margin: 5px 0 0 0;">Address: 123 Main Street, City, Country</p>
-                     <p style="margin: 5px 0 0 0;">Owner EMail: crownclassesrnc@gmail.com</p>
+                     <p style="margin: 0;">&copy; 2024 crown publications . All rights reserved.</p>
+                     <p style="margin: 5px 0 0 0;">Address: aryan tower east jail road , Ranchi , India</p>
+                     <p style="margin: 5px 0 0 0;">Owner EMail: amitaryacp@gmail.com</p>
                      </div>`;
 
 const forgotPasswordEmail = ({ resetURL }) => {
@@ -29,12 +29,12 @@ const forgotPasswordEmail = ({ resetURL }) => {
 
 const congratulationEmail = ({ email }) => {
   return {
-    subject: "Welcome to EXAMATLAS!",
+    subject: "Welcome to CROWN PUBLICATIONS!",
     html: `
       ${emailHeader}
       <div style="padding: 20px;">
             <p>Welcome, ${email}!</p>
-            <p>Thank you for signing up with EXAMATLAS . We're excited to have you on board.</p>
+            <p>Thank you for signing up with  CROWN PUBLICATIONS . We're excited to have you on board.</p>
             <p>Feel free to explore our platform and reach out to us if you have any questions.</p>
       </div>
       ${emailFooter}

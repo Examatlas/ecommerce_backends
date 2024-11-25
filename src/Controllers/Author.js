@@ -13,7 +13,7 @@ exports.createAuthor = async(req,res)=>{
 
             await mailPayload("Author_Request",{
                 email,
-                cc:["crownclassesrnc@gmail.com"],
+                cc:["amitaryacp@gmail.com"],
                 authorName,
                 position,
                 contactNumber,
