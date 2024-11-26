@@ -55,8 +55,8 @@ app.use("/api/author",AuthorRoute)
 app.get("/", (req, res) => {
   res
     .status(200)
-    .send({ message: "Welcome to Ecommerce backend portal.",
-  updated_at: "20-11-2024 10:00 AM IST" });
+    .send({ message: `Welcome to Ecommerce backend portal (${process.env.NODE_ENV}).`,
+  updated_at: "26-11-2024 10:17 PM IST" });
     });
 
 mongoose
