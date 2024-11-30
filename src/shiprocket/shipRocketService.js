@@ -9,6 +9,7 @@ async function getShiprocketToken() {
       email: process.env.SHIPROCKET_EMAIL,
       password: process.env.SHIPROCKET_PASSWORD,
     });
+    console.log("shiprocket token: ", response.data.token)
     return response.data.token;
   } catch (error) {
     console.error('Error authenticating with Shiprocket:', error);
