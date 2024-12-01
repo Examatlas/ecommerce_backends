@@ -44,9 +44,9 @@ exports.createBillingDetail = async (req, res) => {
 exports.getBillingDetailByUserId = async (req, res) => {
   try {
     const { userId } = req.params; // Extract the userId from the request parameters
-    const { addressType='shipping' } = req.query; // Get the addressType from the query parameters
-
-    // Find the billing detail by userId
+    const { addressType = 'shipping' } = req.query; // Get the addressType from the query parameters
+    
+    // Prepare the query conditions for the billing details
     const where = {
       user: userId,
       $or: [
@@ -54,30 +54,33 @@ exports.getBillingDetailByUserId = async (req, res) => {
         { isActive: { $eq: null } }, // Include documents where isActive is null
       ],
     };
-    
+
+    // If an addressType is provided, ensure we filter by it
     if (addressType) {
-      where.$or.push(
-        { addressType },
-        { addressType: { $eq: null } } // Include documents where addressType is null
-      );
+      where.addressType = addressType; // Directly filter by addressType instead of using $or
     }
+
+    console.log("where getBiilingAddress: ", where);
     
+    // Fetch the billing details based on the conditions
     const billingDetail = await BillingDetail.find(where).populate({
       path: 'user',
-      select: '-password', // Exclude fields from user
+      select: '-password', // Exclude password from user details
     });
     
-    // Check if the billing detail exists for the given user
-    if (!billingDetail) {
+    // Check if billing details exist for the given user
+    if (!billingDetail || billingDetail.length === 0) {
       return res.status(404).json({ status: false, message: 'Billing or shipping address not found' });
     }
 
+    // Return the fetched billing details
     return res.status(200).json(billingDetail);
   } catch (error) {
-    console.log("billing fetch error: ",error);
+    console.log("billing fetch error: ", error);
     res.status(500).json({ status: false, message: 'Server error' });
   }
 };
+
 
 
 // Update specific billing detail by userId and billingId
