@@ -7,7 +7,7 @@ const fs = require("fs")
 // create a Book
 exports.createBook = async (req, res) => {
   try {
-    const { title, keyword, price, sellPrice, author, category, subject, content, tags,  dimension, weight, isbn , stock , page} = req?.body;
+    const { title, keyword, price, sellPrice, author, category, subject, content, tags,  dimension, weight, isbn , stock , page , edition , publication} = req?.body;
 
     // Validate required fields
     if (!title) return res.status(400).json({ status: false, message: "Titles is required" });
@@ -21,6 +21,8 @@ exports.createBook = async (req, res) => {
     if (!dimension) return res.status(400).json({ status: false, message: "Dimension is required" });
     if (!stock) return res.status(400).json({ status: false, message: "stock is required" });
     if (!page) return res.status(400).json({ status: false, message: "page is required" });
+    if (!edition) return res.status(400).json({ status: false, message: "edition is required" });
+    if (!publication) return res.status(400).json({ status: false, message: "publication is required" });
 
     // Check for duplicate book title
     const check_duplicate = await BookModel.findOne({ title, is_active: true });
@@ -65,6 +67,8 @@ exports.createBook = async (req, res) => {
       category,
       content,
       tags,
+      edition,
+      publication,
       dimension: JSON.parse(dimension),
       weight,
       subject,
@@ -88,23 +92,74 @@ exports.createBook = async (req, res) => {
 };
 
 
-// // Get all books
+// // // Get all books
+// exports.getBooks = async (req, res) => {
+//   try {
+//     const books = await BookModel.find();
+//     if (!books) {
+//       return res.status(404).json({ status: "false", message: "Book not found" });
+//     }
+//     return res
+//       .status(200)
+//       .json({ status: true, message: "Books fetched succcessfully", books, IsInCart: false });
+//   } catch (error) {
+//     console.log(error.message)
+//     return res
+//       .status(500)
+//       .json({ status: false, error, message: "Internal server error", error });
+//   }
+// };
+
+
+
+// Get all books with search and pagination
+
 exports.getBooks = async (req, res) => {
   try {
-    const books = await BookModel.find();
-    if (!books) {
-      return res.status(404).json({ status: "false", message: "Book not found" });
-    }
-    return res
-      .status(200)
-      .json({ status: true, message: "Books fetched succcessfully", books, IsInCart: false });
+    const { search, per_page = 1000, page = 1 } = req?.query;
+    // Define the query for finding books
+    const query = search
+      ? {
+          $or: [{ title: { $regex: `${search}`, $options: "i" } }],
+        }
+      : {};
+
+    // Find books with pagination and return required fields
+    const books = await BookModel.find(query, {
+        title: true,
+        author: true, 
+        price: true,
+        sellPrice:true,
+        images:true,
+        category:true,
+        is_active: true,
+        createdAt: true,
+        updatedAt: true,
+      })
+      .sort({ createdAt: -1 })
+      .skip((parseInt(page) - 1) * parseInt(per_page))
+      .limit(parseInt(per_page));
+
+    const totalBooks = await BookModel.countDocuments(query);
+
+    return res.status(200).json({
+      status: true,
+      data: books,
+      message: "Books fetched successfully",
+      pagination: {
+        totalRows: totalBooks,
+        totalPages: Math.ceil(totalBooks / per_page),
+        currentPage: parseInt(page),
+      },
+    });
   } catch (error) {
-    console.log(error.message)
+    console.log(error.message);
     return res
       .status(500)
-      .json({ status: false, error, message: "Internal server error", error });
+      .json({ status: false, error, message: "Internal server error" });
   }
 };
+
 
 
 // // Get blog by ID
@@ -131,7 +186,7 @@ exports.getBookById = async (req, res) => {
 exports.updateBook = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, keyword, content, price, sellPrice, tags, author, subject, category, dimension, weight, isbn , stock , page} = req.body;
+    const { title, keyword, content, price, sellPrice, tags, author, subject, category, dimension, weight, isbn , stock , page , edition , publication} = req.body;
 
     // Check if the book exists
     const book = await BookModel.findById(id);
@@ -156,6 +211,8 @@ exports.updateBook = async (req, res) => {
     if (!dimension) return res.status(400).json({ status: false, message: "dimension is required" });
     if (!stock) return res.status(400).json({ status: false, message: "stock is required" });
     if (!page) return res.status(400).json({ status: false, message: "page is required" });
+    if (!edition) return res.status(400).json({ status: false, message: "edition is required" });
+    if (!publication) return res.status(400).json({ status: false, message: "publication is required" });
 
     let imageFilenames = book.images || [];
 
@@ -206,6 +263,8 @@ exports.updateBook = async (req, res) => {
     book.dimension = dimension ? JSON.parse(dimension) : book.dimension;
     book.weight = weight || book.weight;
     book.isbn = isbn || book.isbn;
+    book.edition = edition || book.edition;
+    book.publication = publication || book.publication;
     book.images = imageFilenames;
 
     await book.save();

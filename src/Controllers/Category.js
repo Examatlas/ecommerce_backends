@@ -9,14 +9,12 @@ exports.createCategory = async (req, res) => {
   try {
       const { id, categoryName, description, tags } = req.body;
 
-      // Check if required fields are present
       if (!categoryName || !description || !tags) {
           return res.status(422).json({ status: false, message: "All fields are required!" });
       }
 
       let imageFilenames = [];
 
-      // Handle file uploads if present
       if (req.files && req.files.length) {
           try {
               imageFilenames = await Promise.all(
@@ -24,7 +22,7 @@ exports.createCategory = async (req, res) => {
                       
                       const image_url = await uploadFile(file.path);
 
-                      // Delete the local file after uploading to cloud storage
+                    
                       fs.unlink(file.path, (err) => {
                           if (err) console.error("Error deleting local file:", err);
                       });
@@ -46,26 +44,23 @@ exports.createCategory = async (req, res) => {
 
       let newCategory;
 
-      // If no ID is provided, create a new category
       if (!id) {
-          // Check for duplicate category name
+         
           const check_duplicate = await Category.findOne({ categoryName });
           if (check_duplicate && check_duplicate.is_active) {
               return res.status(400).json({ status: false, message: "Category already exists!" });
           }
 
-          // Create new category
           newCategory = new Category({
               categoryName,
               description,
-              tags: tags.split(",").map((tag) => tag.trim()), // Convert tags to an array
+              tags: tags.split(",").map((tag) => tag.trim()), 
               images: imageFilenames,
               is_active: true,
           });
 
           await newCategory.save();
       } else {
-          // If ID is provided, update the existing category
           newCategory = await Category.findByIdAndUpdate(
               id,
               { categoryName, description, tags: tags.split(",").map((tag) => tag.trim()), images: imageFilenames, is_active: true },
@@ -140,7 +135,6 @@ exports.createCategory = async (req, res) => {
 
 
 // get category by id 
-
 exports.updateCategory = async (req, res) => {
   try {
       const { id, categoryName, description, tags } = req.body;
