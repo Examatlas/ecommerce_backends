@@ -7,6 +7,8 @@ const ShippingSchema = new mongoose.Schema({
         required: true,
         unique: true
       },
+  shipRocketOrderId: String,
+  shipmentId: String,
   channelId: Number,
   channelName: String,
   channelOrderId: String,

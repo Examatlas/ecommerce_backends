@@ -52,6 +52,7 @@ const orderSchema = new mongoose.Schema({
     required: false,
     default: null,
   },
+  shipping: { type: mongoose.Schema.Types.ObjectId, ref: 'Shipping' },
   isActive: { type: Boolean, default: true},
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
