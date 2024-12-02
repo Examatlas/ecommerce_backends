@@ -22,12 +22,14 @@ Allrouter.use("/api/banner",BannerRoute);
 Allrouter.use("/api/category",CategoryRoute);
 Allrouter.use("/api/blog", BlogRoute);
 Allrouter.use("/api/subject", SubjectRoute);
+Allrouter.use("/api/payment",PaymentRoute);
+
 
 // Allrouter.use(isAuthenticated);
 Allrouter.use("/api/wishlist", isAuthenticated, WishlistRoute);
 Allrouter.use("/api/cart", isAuthenticated, CartRoute);
-Allrouter.use("/api/payment",isAuthenticated,PaymentRoute);
-Allrouter.use("/api/billing", isAuthenticated, BillingRoute);
+
+Allrouter.use("/api/billing",isAuthenticated, BillingRoute);
 Allrouter.use("/api/exam", isAuthenticated, ExamRoute);
 Allrouter.use("/api/shiprocket", isAuthenticated, ShiprocketRoute);
 Allrouter.use("/api/bulkorder", isAuthenticated, BulkOrderRoute);
