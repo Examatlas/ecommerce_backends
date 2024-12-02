@@ -25,7 +25,7 @@ const allRouter = require("./src/Routes/index")
 const Razorpay = require("razorpay");
 
 const app = express();
-// Increase payload limit to 10MB (or set as needed)
+// Increase payload limit to 10MB
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
