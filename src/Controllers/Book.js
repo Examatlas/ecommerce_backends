@@ -126,15 +126,37 @@ exports.getBooks = async (req, res) => {
 
     // Find books with pagination and return required fields
     const books = await BookModel.find(query, {
-        title: true,
+        // title: true,
         author: true, 
         price: true,
         sellPrice:true,
-        images:true,
+        // images:true,
         category:true,
-        is_active: true,
-        createdAt: true,
-        updatedAt: true,
+        // is_active: true,
+        // createdAt: true,
+        // updatedAt: true,
+
+
+        // title: true,
+        keyword: true,
+        // price: true,
+        // sellPrice: true,
+        // author: true,
+        // category: true,
+        content: true,
+        subject:true,
+        // examName: { type: String, required: true },
+        dimension: true,
+        // width: { type: String, required: true },
+        edition:true,
+        publication:true,
+        stock:true,
+        page:true,
+        weight: true,
+        isbn:true,
+        tags: true,
+        IsInCart : true,
+        images:true,
       })
       .sort({ createdAt: -1 })
       .skip((parseInt(page) - 1) * parseInt(per_page))
