@@ -126,15 +126,15 @@ exports.getBooks = async (req, res) => {
 
     // Find books with pagination and return required fields
     const books = await BookModel.find(query, {
-        // title: true,
+        title: true,
         author: true, 
         price: true,
         sellPrice:true,
         // images:true,
         category:true,
-        // is_active: true,
-        // createdAt: true,
-        // updatedAt: true,
+        is_active: true,
+        createdAt: true,
+        updatedAt: true,
 
 
         // title: true,
