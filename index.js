@@ -56,6 +56,7 @@ app.use(express.static(path.join(__dirname, 'src/uploads')));
 app.use("", allRouter);
 
 app.get("/", (req, res) => {
+  console.log('TESTING')
   res
     .status(200)
     .send({ message: `Welcome to Ecommerce backend portal (${process.env.NODE_ENV}).`,
