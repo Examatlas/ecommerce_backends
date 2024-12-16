@@ -264,7 +264,8 @@ exports.paymentVerification = async (req, res) => {
             name: item.bookId.title, // Book title
             sku: item.bookId.isbn, // ISBN used as SKU
             units: item.quantity.toString(), // Quantity as string
-            selling_price: item.bookId.sellPrice.toString(), // Selling price as string
+            // selling_price: item.bookId.sellPrice.toString(), // Selling price as string
+            selling_price: item.bookId.price.toString(), // Selling price as string
             discount: (item.bookId.price - item.bookId.sellPrice).toString(), // Calculated discount as string
             tax: "0", // Tax (if applicable)
             hsn: "4901" // HSN code for books
